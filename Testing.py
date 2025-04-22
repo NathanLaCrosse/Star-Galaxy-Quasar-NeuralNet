@@ -34,7 +34,7 @@ with torch.no_grad():
 
     # Print out the confusion matrix of the model to understand what kind of decisions
     # it's making.
-    cm = confusion_matrix(dat.test_labels, torch.argmax(sgq_clf(dat.test_features), dim=1).numpy())
-    disp_cm = ConfusionMatrixDisplay(cm, display_labels=['Star','Galaxy','Quasr'])
+    cm = confusion_matrix(dat.test_labels, torch.argmax(sgq_clf(dat.test_features), dim=1).numpy(), normalize='true')
+    disp_cm = ConfusionMatrixDisplay(cm, display_labels=['Star','Galaxy','Quasar'])
     disp_cm.plot()
     plt.show()

@@ -71,7 +71,7 @@ def train_neural_classifier(device, epochs=10, batch_size=16, lr=0.001, save_fil
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Train the model
-sgq_clf, dat = train_neural_classifier(device, epochs=1)
+sgq_clf, dat = train_neural_classifier(device, epochs=150, batch_size=128)
 
 # Put the model back on the cpu
 sgq_clf.to(torch.device("cpu"))
