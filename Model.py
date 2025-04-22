@@ -65,10 +65,9 @@ class StarGalaxyClassifier(nn.Module):
         super(StarGalaxyClassifier, self).__init__()
 
         # Some notes on the model structure.
-        #  - Activation Functions - LeakyReLu performed the best in testing.
-        #                         - Sigmoid has a disastrous performance.
-        #                         - ReLu performs similar to LeakyReLu
-        # - Size - Different amounts of nodes and hidden layers were tested.
+        #  -  Activation Function - LeakyReLU performed the best throughout testing.
+        #  -  Scope - Using a large (over 100,000 parameters) model as results from an SVC were already quite accurate.
+        #  -  Uses Dropout1d and BatchNorm1d to reduce overfitting.
         self.model = nn.Sequential(
             nn.BatchNorm1d(6),
             nn.Linear(6, 500),
