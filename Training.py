@@ -10,16 +10,14 @@ from Model import StarGalaxyData, StarGalaxyClassifier
 
 
 """ --------------- Training Method --------------- """
-def train_neural_classifier(epochs=10, batch_size=16, lr=0.001, trained_network=None, save_file="classifier1.pt"):
+def train_neural_classifier(device, epochs=10, batch_size=16, lr=0.001, save_file="classifier1.pt"):
     # Set up data loader
     dat = StarGalaxyData()
     data_loader = DataLoader(dat, batch_size=batch_size, shuffle=True, drop_last=True)
 
-    # Create the ANN and load save point from file if it exists
+    # Create the ANN and put it on the desired device
     sgq_clf = StarGalaxyClassifier()
-    if trained_network is not None:
-        sgq_clf.load_state_dict(torch.load(trained_network))
-        sgq_clf.train()
+    sgq_clf.to(device)
 
     # Print the size of the neural network.
     print(f"Parameter Count: {sum(param.numel() for param in sgq_clf.parameters())}")
@@ -34,6 +32,8 @@ def train_neural_classifier(epochs=10, batch_size=16, lr=0.001, trained_network=
     for epoch in range(epochs):
         for _, data in enumerate(tqdm(data_loader)):
             x, y = data
+            x = x.to(device)
+            y = y.to(device)
 
             # Run an optimizer step based off of the loss function
             optimizer.zero_grad()
@@ -52,13 +52,13 @@ def train_neural_classifier(epochs=10, batch_size=16, lr=0.001, trained_network=
             print(f"\nRunning loss for epoch {epoch + 1} of {epochs}: {running_loss:.4f}")
 
             # Measure accuracy on the training set
-            predictions = torch.argmax(sgq_clf(dat.train_features), dim=1)
-            correct = (predictions == dat.train_labels).sum().item()
+            predictions = torch.argmax(sgq_clf(dat.train_features.to(device)), dim=1)
+            correct = (predictions == dat.train_labels.to(device)).sum().item()
             print(f"Accuracy on train set: {correct / len(dat.train_features):.4f}")
 
             # Measure accuracy on the validation set
-            predictions = torch.argmax(sgq_clf(dat.validate_features), dim=1)
-            correct = (predictions == dat.validate_labels).sum().item()
+            predictions = torch.argmax(sgq_clf(dat.validate_features.to(device)), dim=1)
+            correct = (predictions == dat.validate_labels.to(device)).sum().item()
             print(f"Accuracy on validation set: {correct / len(dat.validate_features):.4f}")
 
         running_loss = 0.0
@@ -66,8 +66,17 @@ def train_neural_classifier(epochs=10, batch_size=16, lr=0.001, trained_network=
     torch.save(sgq_clf.state_dict(), save_file)
     return sgq_clf, dat
 
-sgq_clf, dat = train_neural_classifier(epochs=1)
 
+# Choose a device
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+# Train the model
+sgq_clf, dat = train_neural_classifier(device, epochs=1)
+
+# Put the model back on the cpu
+sgq_clf.to(torch.device("cpu"))
+
+# Print the test results
 with torch.no_grad():
     predictions = torch.argmax(sgq_clf(dat.test_features), dim=1)
     correct = (predictions == dat.test_labels).sum().item()
