@@ -1,0 +1,39 @@
+    def __init__(self):
+        super(StarGalaxyClassifier, self).__init__()
+
+        self.norm = nn.BatchNorm1d(6) # Normalize the data by-batch
+
+        self.in_to_h1 = nn.Linear(6, 50)
+        self.h1_to_h2 = nn.Linear(50, 50)
+        self.h2_to_h3 = nn.Linear(50, 50)
+        self.h3_to_out = nn.Linear(50, 3)
+
+    def forward(self, x):
+        x = self.norm(x)
+        x = F.sigmoid(self.in_to_h1(x))
+        x = F.dropout(x, 0.1)
+        x = F.relu(self.h1_to_h2(x))
+        x = F.sigmoid(self.h2_to_h3(x))
+        x = F.dropout(x, 0.1)
+        return self.h3_to_out(x)
+
+self.model = nn.Sequential(
+            nn.BatchNorm1d(6),
+            nn.Linear(6, 300),
+            nn.Dropout(0.5),
+            nn.LeakyReLU(),
+            nn.Linear(300, 300),
+            nn.LeakyReLU(),
+            nn.Linear(300, 300),
+            nn.Dropout(0.5),
+            nn.BatchNorm1d(300),
+            nn.LeakyReLU(),
+            nn.Linear(300, 300),
+            nn.LeakyReLU(),
+            nn.Linear(300, 300),
+            nn.Dropout(0.5),
+            nn.LeakyReLU(),
+            nn.Linear(300, 300),
+            nn.LeakyReLU(),
+            nn.Linear(300, 3)
+        )
