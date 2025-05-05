@@ -37,4 +37,7 @@ with torch.no_grad():
     cm = confusion_matrix(dat.test_labels, torch.argmax(sgq_clf(dat.test_features), dim=1).numpy(), normalize='true')
     disp_cm = ConfusionMatrixDisplay(cm, display_labels=['Star','Galaxy','Quasar'])
     disp_cm.plot()
+
+    plt.savefig("SVC Neural Net.png")
+
     plt.show()
