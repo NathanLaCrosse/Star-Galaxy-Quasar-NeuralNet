@@ -11,7 +11,7 @@ from Model import StarGalaxyData, StarGalaxyClassifier
 
 # Load the dataset and neural network models
 dat = StarGalaxyData()
-clf_dict = torch.load("classifier1.pt")
+clf_dict = torch.load("classifier1.pt", map_location=torch.device('cpu'))
 sgq_clf = StarGalaxyClassifier()
 sgq_clf.load_state_dict(clf_dict)
 
